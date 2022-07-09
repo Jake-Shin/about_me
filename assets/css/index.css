@@ -1,1 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cairo&family=Poor+Story&display=swap');
+body {font-family: 'Cairo', 'Poor Story', sans-serif;}
+body .full-navbar{position: absolute; z-index: 999;}
+ul{padding-left: 0; list-style-type: none; margin: 0;}
+ul.full-navbar li{display: inline-block;}
+a {text-decoration: none; color: #000;}
 div#test {color: #ff0000;}

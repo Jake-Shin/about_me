@@ -5,9 +5,50 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" type="text/css" href="assets/css/index.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.9/fullpage.css" integrity="sha512-zDKgq9gDZL1N3buxzFPZjHwqDOFsgTyhR0aJtXLFTIjEFovumXMaVeF6iBUZ/Rc4Mb0IqRrhqAY+RY7OCUBo6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js" integrity="sha256-6XMVI0zB8cRzfZjqKcD01PBsAy3FlDASrlC8SxCpInY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.9/fullpage.js" integrity="sha512-Ql+BI+ZJBJ9b8dZ5FKuyCz42y0ZcG05muq5tHIfb0Qxe0TlEtGkYXV8Df7h6HbJolt6Rhz6gRMBLypwX6slbzw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js"></script>
   <title>Document</title>
+  <script>
+    $(function() {
+      new fullpage("#fullpage", {
+        autoScrolling: true,
+        scrollHorizontally: true,
+        navigation: true,
+        navigationPosition: "right",
+        anchors: ['first', 'second', 'third'],
+      });
+      new TypeIt("#typeit", {
+        speed: 150,
+        startDelay: 900,
+        loop: true,
+      })
+      .type("안녕하세요dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ", {delay: 100})
+      .go();
+    });
+  </script>
 </head>
 <body>
-  <div id="test">안녕하세요</div>
+  <ul class="full-navbar">
+    <li><a href="#first">first</a></li>
+    <li><a href="#second">second</a></li>
+    <li><a href="#third">third</a></li>
+  </ul>
+  <main id="fullpage">
+    <section class="section" data-anchor="first" style="border: solid 1px gray;">
+      <span id="typeit"></span>
+    </section>
+    <section class="section" data-anchor="second" style="border: solid 1px gray;">
+      <h2>두번째</h2>
+    </section>
+    <section class="section" data-anchor="third" style="border: solid 1px gray;">
+      <h2>세번째</h2>
+    </section>
+  </main>
+  <script>
+    
+  </script>
 </body>
 </html>
