@@ -1,54 +1,427 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" type="text/css" href="assets/css/index.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.9/fullpage.css" integrity="sha512-zDKgq9gDZL1N3buxzFPZjHwqDOFsgTyhR0aJtXLFTIjEFovumXMaVeF6iBUZ/Rc4Mb0IqRrhqAY+RY7OCUBo6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-  <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js" integrity="sha256-6XMVI0zB8cRzfZjqKcD01PBsAy3FlDASrlC8SxCpInY=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.9/fullpage.js" integrity="sha512-Ql+BI+ZJBJ9b8dZ5FKuyCz42y0ZcG05muq5tHIfb0Qxe0TlEtGkYXV8Df7h6HbJolt6Rhz6gRMBLypwX6slbzw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdn.jsdelivr.net/npm/typeit@7.0.4/dist/typeit.min.js"></script>
-  <title>Document</title>
-  <script>
-    $(function() {
-      new fullpage("#fullpage", {
-        autoScrolling: true,
-        scrollHorizontally: true,
-        navigation: true,
-        navigationPosition: "right",
-        anchors: ['first', 'second', 'third'],
-      });
-      new TypeIt("#typeit", {
-        speed: 150,
-        startDelay: 900,
-        loop: true,
-      })
-      .type("안녕하세요dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ", {delay: 100})
-      .go();
-    });
-  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>팀 배정</title>
+  <style>
+    :root{
+      --bg: #0b1020;
+      --panel: #11162a;
+      --text: #e7ecff;
+      --muted: #9aa3c7;
+      --blue: #2ea5ff;  /* 청팀 */
+      --red:  #ff5b6e;  /* 홍팀 */
+      --gold: #ffcc33;  /* 황팀 */
+      --card: #1a2140;
+      --accent: #6fd3ff;
+    }
+    *{ box-sizing: border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Helvetica, Arial, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif;
+      color: var(--text); background: radial-gradient(1200px 800px at 80% -20%, #19314f, transparent 65%),
+              radial-gradient(1000px 600px at -10% 120%, #262042, transparent 55%),
+              var(--bg);
+    }
+    .container{ max-width:1100px; margin:40px auto; padding:0 20px; }
+    header{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; }
+    header h1{ font-size: clamp(20px, 3vw, 28px); margin:0; letter-spacing: .2px; }
+    header p{ margin:0; color: var(--muted); font-size:14px; }
+
+    .controls{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+    button{
+      appearance:none; border:none; cursor:pointer; border-radius:14px; padding:10px 16px; font-weight:700;
+      color:#0a1020; background: linear-gradient(180deg, #91e2ff, #1fb9ff);
+      box-shadow: 0 6px 16px rgba(31,185,255,.35), inset 0 0 0 1px rgba(255,255,255,.4);
+      transition: transform .08s ease, box-shadow .2s ease; will-change: transform;
+    }
+    button:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px rgba(31,185,255,.45), inset 0 0 0 1px rgba(255,255,255,.5); }
+    button:active{ transform: translateY(0); box-shadow: 0 6px 16px rgba(31,185,255,.35); }
+    .ghost{ background: linear-gradient(180deg,#e9eaf2,#cfd6ff); }
+
+    .toggle{ display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:12px; background: rgba(255,255,255,.06); color:var(--muted); font-weight:600; }
+    .toggle input{ transform: translateY(1px); }
+
+    .grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:16px; margin-top:20px; }
+    @media (max-width: 920px){ .grid{ grid-template-columns: 1fr; } }
+
+    .col{ background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02)); border:1px solid rgba(255,255,255,.08); border-radius:18px; padding:14px; min-height:260px; position:relative; overflow:hidden; }
+    .col h2{ display:flex; align-items:center; gap:8px; margin:0 0 10px; font-size:18px; letter-spacing:.3px; }
+    .tag{ font-size:12px; font-weight:800; letter-spacing:.5px; padding:4px 8px; border-radius:999px; color:#0b0f1a; }
+    .tag.blue{ background: var(--blue); }
+    .tag.red{ background: var(--red); }
+    .tag.gold{ background: var(--gold); }
+    .count{ color:var(--muted); font-size:12px; font-weight:700; margin-left:auto; }
+
+    .list{ display:grid; grid-template-columns: 1fr; gap:8px; }
+
+    .card{
+      background: var(--card); border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px 12px;
+      font-weight:700; letter-spacing:.2px; position:relative; isolation:isolate;
+      transform: translateY(6px) scale(.98); opacity:0; animation: pop .5s ease forwards;
+    }
+    @keyframes pop{ to{ transform: translateY(0) scale(1); opacity:1; } }
+
+    .card::after{ content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+      background: linear-gradient(90deg, rgba(255,255,255,.07), transparent 30%);
+      opacity:0; transition: opacity .3s ease; }
+    .card:hover::after{ opacity:1; }
+
+    .hint{ margin-top:12px; color: var(--muted); font-size:12px; }
+
+    .ribbon{
+      position:absolute; top:14px; right:-38px; transform: rotate(35deg); color:#0b0f1a; font-weight:900; letter-spacing:.6px;
+      background:#a1fca1; padding:4px 56px; border-radius:999px; font-size:12px; box-shadow: 0 4px 16px rgba(0,0,0,.18);
+    }
+
+    .footer{ margin:26px 0 10px; color:var(--muted); font-size:12px; text-align:center; }
+
+    /* 진행중 이름/대기열 스타일 */
+    @keyframes floaty{ from{ transform: translateY(0) rotate(-1deg); } to{ transform: translateY(-8px) rotate(1deg);} }
+    .chip{ padding:6px 10px; border-radius:999px; font-weight:700; font-size:12px; letter-spacing:.2px;
+      background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); color:var(--text); }
+    .chip.dim{ opacity:.5; }
+
+    /* 룰렛(빠칭코) 스타일 */
+    .roulette{ display:inline-flex; align-items:center; justify-content:center; width:100%;
+      height:48px; margin:6px 0 10px; border-radius:12px; font-weight:900; letter-spacing:.3px;
+      background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.06));
+      border:1px solid rgba(255,255,255,.14); box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+      filter: drop-shadow(0 6px 18px rgba(0,0,0,.18));
+    }
+    .roulette.flash{ animation: rflash .35s ease 3; }
+    @keyframes rflash{ 50%{ background:linear-gradient(180deg,#d7f2ff,#92dbff);} }
+
+    /* simple confetti */
+    canvas#confetti{ position: fixed; inset: 0; width:100vw; height:100vh; pointer-events:none; }
+  </style>
 </head>
 <body>
-  <ul class="full-navbar">
-    <li><a href="#first">first</a></li>
-    <li><a href="#second">second</a></li>
-    <li><a href="#third">third</a></li>
-  </ul>
-  <main id="fullpage">
-    <section class="section" data-anchor="first" style="border: solid 1px gray;">
-      <span id="typeit"></span>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <div class="container">
+    <header>
+      <div>
+        <h1>팀 배정 <span style="opacity:.8"><!-- — "랜덤처럼 보이는" 연출 --></span></h1>
+        <p>버튼을 누르면 무작위 순서로 팀이 배정 됩니다.</p>
+      </div>
+      <div class="controls">
+        <!-- <label class="toggle" title="연출 전용: 실제 결과는 고정"> -->
+          <input id="demoMode" type="checkbox" /> <!--비공식 데모 셔플-->
+        <!-- </label> -->
+        <label class="toggle" title="팀별 룰렛(빠칭코) 연출 사용">
+          <input id="rouletteMode" type="checkbox" checked /> 룰렛 모드(동시 회전)
+        </label>
+        <button id="run">배정 시작</button>
+        <button id="reset" class="ghost">초기화</button>
+      </div>
+    </header>
+
+    <!-- 진행중 이름 표시 & 대기열 -->
+    <div id="queue" aria-live="polite" style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px"></div>
+    <div id="floatingWrap" aria-hidden="true" style="position:fixed;inset:0;display:none;place-items:center;pointer-events:none;z-index:50;">
+      <div id="floatingName" style="
+        padding:18px 28px;border-radius:18px;font-weight:900;font-size:clamp(22px,4vw,40px);letter-spacing:.4px;
+        color:#0b0f1a;background:linear-gradient(180deg,#a7f3ff,#4fd1ff);box-shadow:0 18px 60px rgba(0,0,0,.35);
+        filter: drop-shadow(0 6px 18px rgba(31,185,255,.35));
+        animation: floaty 2s ease-in-out infinite alternate;
+      "></div>
+    </div>
+
+
+    <section class="grid" aria-live="polite">
+      <article class="col" data-team="청">
+        <h2>
+          <span class="tag blue">청팀</span>
+          <span class="count" id="count-blue">0명</span>
+        </h2>
+        <div class="list" id="blue"></div>
+      </article>
+      <article class="col" data-team="홍">
+        <h2>
+          <span class="tag red">홍팀</span>
+          <span class="count" id="count-red">0명</span>
+        </h2>
+        <div class="list" id="red"></div>
+      </article>
+      <article class="col" data-team="황">
+        <h2>
+          <span class="tag gold">황팀</span>
+          <span class="count" id="count-gold">0명</span>
+        </h2>
+        <div class="list" id="gold"></div>
+      </article>
     </section>
-    <section class="section" data-anchor="second" style="border: solid 1px gray;">
-      <h2>두번째</h2>
-    </section>
-    <section class="section" data-anchor="third" style="border: solid 1px gray;">
-      <h2>세번째</h2>
-    </section>
-  </main>
+
+    <!-- <p class="hint">※ "비공식 데모 셔플"을 켜면 같은 인원수(청 11 / 홍 11 / 황 10)로 임시 랜덤 배치를 보여주지만, 이는 공식 결과가 아닙니다.</p> -->
+    <!-- <div id="demoRibbon" class="ribbon" style="display:none">DEMO</div> -->
+
+    <!-- <p class="footer">GitHub Pages에 <strong>index.html</strong> 한 파일만 올리면 바로 동작합니다.</p> -->
+  </div>
+
   <script>
-    
+    // ====== 공식 팀 구성 (고정) ======
+    const OFFICIAL = {
+      blue: [
+        "김평화","김화은","마윤선","문다혜","민시원",
+        "박준혁","윤명섭","이용준","전활천","전희천","조선비"
+      ],
+      red: [
+        "김시안","김지선","백승훈","백종길","서민교",
+        "윤형섭","이상준","이세현","이애린","이정관","이주찬"
+      ],
+      gold: [
+        "김성은","김장현","노성은","서이삭","양은혜",
+        "이상아","이예진","이윤성","임충현","크리스탈"
+      ]
+    };
+
+    const TARGET_COUNTS = { blue: 11, red: 11, gold: 10 };
+
+    // DOM refs
+    const $blue = document.getElementById('blue');
+    const $red  = document.getElementById('red');
+    const $gold = document.getElementById('gold');
+    const $run  = document.getElementById('run');
+    const $reset= document.getElementById('reset');
+    const $demo = document.getElementById('demoMode');
+    const $ribbon = document.getElementById('demoRibbon');
+    const $queue  = document.getElementById('queue');
+    const $floatingWrap = document.getElementById('floatingWrap');
+    const $floatingName = document.getElementById('floatingName');
+    const $roulette = document.getElementById('rouletteMode');
+
+    const $countBlue = document.getElementById('count-blue');
+    const $countRed  = document.getElementById('count-red');
+    const $countGold = document.getElementById('count-gold');
+
+    function updateCounts(){
+      $countBlue.textContent = `${$blue.children.length}명`;
+      $countRed.textContent  = `${$red.children.length}명`;
+      $countGold.textContent = `${$gold.children.length}명`;
+    }
+
+    function clearAll(){
+      [$blue,$red,$gold].forEach(c=> c.innerHTML = '');
+      $queue.innerHTML = '';
+      hideFloating();
+      updateCounts();
+      stopConfetti();
+    }
+
+    $reset.addEventListener('click', clearAll);
+
+    function shuffle(arr){
+      const a = arr.slice();
+      for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+      return a;
+    }
+
+    function cardEl(name){
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.textContent = name;
+      return el;
+    }
+
+    function chipEl(name, dim=false){
+      const el = document.createElement('span');
+      el.className = 'chip' + (dim ? ' dim' : '');
+      el.textContent = name;
+      return el;
+    }
+
+    function allPeople(){
+      return [...OFFICIAL.blue, ...OFFICIAL.red, ...OFFICIAL.gold];
+    }
+
+    function demoBuckets(){
+      // 랜덤 데모: 인원수만 맞춰서 셔플
+      const names = shuffle(allPeople());
+      return {
+        blue: names.slice(0, TARGET_COUNTS.blue),
+        red: names.slice(TARGET_COUNTS.blue, TARGET_COUNTS.blue + TARGET_COUNTS.red),
+        gold: names.slice(TARGET_COUNTS.blue + TARGET_COUNTS.red)
+      };
+    }
+
+    const delay = (ms) => new Promise(r=> setTimeout(r, ms));
+
+    function showFloating(name){
+      if ($roulette.checked) return; // 룰렛 모드면 중앙 플로팅 비활성화
+      $floatingName.textContent = name;
+      $floatingWrap.style.display = 'grid';
+    }
+    function hideFloating(){
+      $floatingWrap.style.display = 'none';
+      $floatingName.textContent = '';
+    }
+
+    function updateQueue(remaining){
+      $queue.innerHTML = '';
+      remaining.forEach((n,i)=> $queue.appendChild(chipEl(n, i>15)));
+    }
+
+    // ───────────────── 룰렛 제어 (동시 회전) ─────────────────
+    function makeRoulette(parent){
+      const box = document.createElement('div');
+      box.className = 'roulette';
+      parent.appendChild(box);
+      const pool = shuffle(allPeople());
+      let idx = 0, timer = null, active = false;
+      function spin(){
+        if(active) return; active = true;
+        timer = setInterval(()=>{ idx = (idx+1)%pool.length; box.textContent = pool[idx]; }, 100);
+      }
+      function resume(){ if(!active){ spin(); } }
+      async function stopOn(name){
+        if(timer){ clearInterval(timer); timer = null; }
+        active = false;
+        box.classList.add('flash');
+        box.textContent = name;
+        await delay(380);
+        box.classList.remove('flash');
+      }
+      function remove(){ if(timer) clearInterval(timer); box.remove(); }
+      return { box, spin, resume, stopOn, remove };
+    }
+
+    async function runAssign(){
+      clearAll();
+      const isDemo = $demo.checked;
+      const useRoulette = $roulette.checked;
+      const buckets = isDemo ? demoBuckets() : OFFICIAL;
+      $ribbon.style.display = isDemo ? 'block' : 'none';
+
+      // 전체 순서(팀 혼합): 전부 섞되, 각 항목은 최종 팀으로 배치됨
+      const sequence = shuffle([
+        ...buckets.blue.map(n=>({team:'blue', name:n})),
+        ...buckets.red.map(n=>({team:'red', name:n})),
+        ...buckets.gold.map(n=>({team:'gold', name:n})),
+      ]);
+
+      // 대기열 초기화
+      const remaining = sequence.map(s=> s.name);
+      updateQueue(remaining);
+
+      const teamMap = { blue: $blue, red: $red, gold: $gold };
+
+      // 룰렛 모드: 각 팀에 하나씩 룰렛을 생성하고 동시에 회전 시작
+      let R = null;
+      if(useRoulette){
+        R = {
+          blue: makeRoulette($blue),
+          red:  makeRoulette($red),
+          gold: makeRoulette($gold)
+        };
+        R.blue.spin(); R.red.spin(); R.gold.spin();
+      }
+
+      // 멈춤 템포: 빠르게 진행(전체 시간 단축)
+      const STOP_BASE = useRoulette ? 3000 : 2000; // 룰렛일 땐 0.7초 수준
+
+      for(const item of sequence){
+        showFloating(item.name);
+
+        if(useRoulette){
+          // 해당 팀 룰렛만 잠시 멈춰서 이름 확정 → 카드 배치 → 다시 회전
+          await R[item.team].stopOn(item.name);
+          hideFloating();
+          teamMap[item.team].appendChild(cardEl(item.name));
+          R[item.team].resume();
+        } else {
+          // 비-룰렛 모드: 기존 2초 대기
+          await delay(STOP_BASE);
+          hideFloating();
+          teamMap[item.team].appendChild(cardEl(item.name));
+        }
+
+        remaining.shift();
+        updateQueue(remaining);
+        updateCounts();
+        // 전역 템포 (다음 당첨까지의 간격)
+        await delay(useRoulette ? (120 + Math.random()*160) : (120 + Math.random()*120));
+      }
+
+      // 룰렛 제거
+      if(useRoulette && R){
+        R.blue.remove(); R.red.remove(); R.gold.remove();
+      }
+
+      // 정렬(가나다순) 후 축하 효과
+      ['blue','red','gold'].forEach(key=>{
+        const box = teamMap[key];
+        const nodes = Array.from(box.children);
+        nodes.sort((a,b)=> a.textContent.localeCompare(b.textContent, 'ko'));
+        nodes.forEach(n=> box.appendChild(n));
+      });
+      startConfetti(1400);
+    }
+
+    $run.addEventListener('click', runAssign);
+
+    // ====== 간단한 콘페티 ======
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    let confettiTimer=null, sprites=[], rafId=null;
+
+    function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+    addEventListener('resize', resize); resize();
+
+    function spawn(n=140){
+      sprites = Array.from({length:n},()=>({
+        x: Math.random()*canvas.width,
+        y: -20-Math.random()*40,
+        r: 3+Math.random()*5,
+        vx: -1+Math.random()*2,
+        vy: 2+Math.random()*3,
+        a: Math.random()*Math.PI*2,
+        va: -.2+Math.random()*.4,
+        c: Math.random()<.33 ? '#78c7ff' : (Math.random()<.5 ? '#ff8aa0' : '#ffd166')
+      }));
+    }
+    function tick(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      sprites.forEach(s=>{
+        s.x += s.vx; s.y += s.vy; s.a += s.va; s.vy += .01;
+        ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.a);
+        ctx.fillStyle = s.c; ctx.fillRect(-s.r, -s.r, s.r*2, s.r*2);
+        ctx.restore();
+      });
+      rafId = requestAnimationFrame(tick);
+    }
+    function startConfetti(ms=1200){
+      spawn();
+      if(rafId) cancelAnimationFrame(rafId);
+      tick();
+      clearTimeout(confettiTimer);
+      confettiTimer = setTimeout(()=>{ stopConfetti(); }, ms);
+    }
+    function stopConfetti(){
+      if(rafId) { cancelAnimationFrame(rafId); rafId=null; }
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      sprites=[];
+    }
+
+    // ====== 간단 테스트 (콘솔 확인용) ======
+    (function selfTest(){
+      const all = [...new Set([...OFFICIAL.blue, ...OFFICIAL.red, ...OFFICIAL.gold])];
+      console.assert(OFFICIAL.blue.length === 11, '청팀 인원 수가 11이 아닙니다');
+      console.assert(OFFICIAL.red.length  === 11, '홍팀 인원 수가 11이 아닙니다');
+      console.assert(OFFICIAL.gold.length === 10, '황팀 인원 수가 10이 아닙니다');
+      console.assert(all.length === 32, '이름 중복이 있거나 총 인원이 32명이 아닙니다');
+      console.log('%cTESTS PASSED','background:#0bdc6a;color:#001b15;padding:2px 6px;border-radius:6px');
+    })();
+
+    // 초기 안내 상태에서 살짝 애니메이션 효과
+    (function introPulse(){
+      let hint = document.querySelector('.hint');
+      if(!hint) return;
+      hint.animate([
+        { opacity:.6 }, { opacity:1 }, { opacity:.6 }
+      ], { duration: 1800, iterations: 2 });
+    })();
   </script>
 </body>
 </html>
